@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.blue),
       ),
+      debugShowCheckedModeBanner: false,
       home: HomeScreen(),
     );
   }

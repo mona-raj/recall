@@ -1,35 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:recall/models/reminder.dart';
 import 'package:recall/screens/reminder_screen.dart';
 import 'package:recall/widgets/reminder_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Reminder> reminders = [];
+
+  Future<void> _addReminder() async {
+    final newReminder = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReminderScreen()),
+    );
+
+    if (newReminder != null) {
+      setState(() {
+        reminders.add(newReminder);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Recall Memory Assistant"), centerTitle: true),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ReminderScreen()),
-          );
-        },
+        onPressed: _addReminder,
         child: const Icon(Icons.add),
       ),
-      body: ListView(
+      body: ListView.builder(
         padding: EdgeInsets.all(12),
-        children: [
-          ReminderCard(
-            "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQmXNQqhpaZfcW1aLOBp1_18c36HlkvLKtPrreeyVr8gKjRrR2u",
-            "Bring Umbrella",
-            "9:00 am",
-          ),
-          ReminderCard(
-            "https://images.ctfassets.net/sabbecbbwaz3/3vJo5zRIw20v31OnbfEiwo/6b5725df4aee79b06a843e77efa8347f/Vicks_AU_Cough_2in1_Syrup_front.jpg",
-            "Take medicine",
-            "10:00 am",
-          ),
-        ],
+        itemCount: reminders.length,
+        itemBuilder: (context, index) => ReminderCard(
+          reminders[index].imagePath,
+          reminders[index].title,
+          reminders[index].time,
+        ),
       ),
     );
   }

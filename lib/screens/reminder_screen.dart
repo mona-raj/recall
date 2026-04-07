@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recall/models/reminder.dart';
 
 class ReminderScreen extends StatefulWidget {
   @override
@@ -6,18 +7,48 @@ class ReminderScreen extends StatefulWidget {
 }
 
 class _ReminderScreenState extends State<ReminderScreen> {
+  TextEditingController titleController = TextEditingController();
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    super.dispose();
+  }
+
   TimeOfDay? selectedTime;
 
   Future<void> pickTime(BuildContext context, TimeOfDay? initialTime) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: initialTime ?? TimeOfDay.now(),
     );
 
     if (pickedTime != null) {
-      setState(() async {
+      setState(() {
         selectedTime = pickedTime;
       });
+    }
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: Duration(seconds: 2)),
+    );
+  }
+
+  void submitReminder() {
+    String title = titleController.text.trim();
+    String imagePath =
+        'https://static.thenounproject.com/png/default-image-icon-4595376-512.png';
+
+    if (title.isEmpty) {
+      showMessage("Please enter a reminder title");
+    } else if (selectedTime == null) {
+      showMessage("Please select a time");
+    } else {
+      String time = selectedTime!.format(context);
+      Reminder newReminder = Reminder(title, time, imagePath);
+      Navigator.pop(context, newReminder);
     }
   }
 
@@ -33,6 +64,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
             spacing: 12,
             children: [
               TextField(
+                controller: titleController,
                 decoration: InputDecoration(hintText: 'Enter Reminder name'),
               ),
               ElevatedButton(
@@ -45,13 +77,13 @@ class _ReminderScreenState extends State<ReminderScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () => pickTime(context, selectedTime),
-                    child: Text("Pick time"),
+                    child: Text("Select time"),
                   ),
                   Text("Selected time: ${selectedTime?.format(context)}"),
                 ],
               ),
               ElevatedButton(
-                onPressed: () => {print("Saved reminder")},
+                onPressed: submitReminder,
                 child: Text("Save Reminder"),
               ),
             ],
