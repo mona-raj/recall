@@ -35,10 +35,43 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView.builder(
         padding: EdgeInsets.all(12),
         itemCount: reminders.length,
-        itemBuilder: (context, index) => ReminderCard(
-          reminders[index].imagePath,
-          reminders[index].title,
-          reminders[index].time,
+        itemBuilder: (context, index) => Dismissible(
+          key: Key(reminders[index].title),
+          direction: DismissDirection.endToStart, // right to left
+          background: Container(
+            color: Colors.red,
+            child: Icon(Icons.delete_outline),
+          ),
+          onDismissed: (direction) {
+            final removedReminder = reminders[index];
+            final removedIndex = index;
+
+            setState(() {
+              reminders.removeAt(index);
+            });
+
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: Duration(seconds: 2),
+                content: Text("Reminder deleted"),
+                action: SnackBarAction(
+                  label: 'Undo',
+                  onPressed: () {
+                    setState(() {
+                      reminders.insert(removedIndex, removedReminder);
+                    });
+                  },
+                ),
+              ),
+            );
+          },
+          child: ReminderCard(
+            reminders[index].imagePath,
+            reminders[index].title,
+            reminders[index].time,
+          ),
         ),
       ),
     );
