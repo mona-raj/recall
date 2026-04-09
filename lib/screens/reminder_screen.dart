@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:recall/models/reminder.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ReminderScreen extends StatefulWidget {
   @override
@@ -13,6 +17,16 @@ class _ReminderScreenState extends State<ReminderScreen> {
   void dispose() {
     titleController.dispose();
     super.dispose();
+  }
+
+  XFile? selectedImage;
+
+  void pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+    setState(() {
+      selectedImage = image;
+    });
   }
 
   TimeOfDay? selectedTime;
@@ -38,8 +52,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   void submitReminder() {
     String title = titleController.text.trim();
-    String imagePath =
-        'https://static.thenounproject.com/png/default-image-icon-4595376-512.png';
+    String? imagePath = selectedImage?.path;
 
     if (title.isEmpty) {
       showMessage("Please enter a reminder title");
@@ -47,7 +60,11 @@ class _ReminderScreenState extends State<ReminderScreen> {
       showMessage("Please select a time");
     } else {
       String time = selectedTime!.format(context);
-      Reminder newReminder = Reminder(title: title, time: time, imagePath: imagePath);
+      Reminder newReminder = Reminder(
+        title: title,
+        time: time,
+        imagePath: imagePath,
+      );
       Navigator.pop(context, newReminder);
     }
   }
@@ -67,10 +84,22 @@ class _ReminderScreenState extends State<ReminderScreen> {
                 controller: titleController,
                 decoration: InputDecoration(hintText: 'Enter Reminder name'),
               ),
-              ElevatedButton(
-                onPressed: () => {print("Image picked")},
-                child: Text("Add photo"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => pickImage(),
+                    child: Text("Add photo"),
+                  ),
+                  if (selectedImage != null)
+                    Image.file(
+                      File(selectedImage!.path),
+                      height: 200,
+                      width: 200,
+                    ),
+                ],
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 12,
@@ -79,7 +108,13 @@ class _ReminderScreenState extends State<ReminderScreen> {
                     onPressed: () => pickTime(context, selectedTime),
                     child: Text("Select time"),
                   ),
-                  Text("Selected time: ${selectedTime?.format(context)}"),
+                  if (selectedTime != null)
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        "Selected time: ${selectedTime?.format(context)}",
+                      ),
+                    ),
                 ],
               ),
               ElevatedButton(

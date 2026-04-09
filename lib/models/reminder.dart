@@ -8,6 +8,6 @@ class Reminder {
 
   final String title;
   final String time;
-  final String imagePath;
+  final String? imagePath;
   bool isComplete;
 }

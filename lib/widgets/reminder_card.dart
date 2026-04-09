@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class ReminderCard extends StatelessWidget {
-  final String imgUrl;
+  final String? imgPath;
   final String title;
   final String time;
   final bool isComplete;
 
-  ReminderCard(this.imgUrl, this.title, this.time, this.isComplete);
+  ReminderCard(this.imgPath, this.title, this.time, this.isComplete);
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +31,10 @@ class ReminderCard extends StatelessWidget {
             ),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 32,
             children: [
-              _CardImage(imgUrl),
+              _CardImage(imgPath),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 20,
@@ -47,22 +49,27 @@ class ReminderCard extends StatelessWidget {
 }
 
 class _CardImage extends StatelessWidget {
-  final String imgUrl;
+  final String? imgPath;
 
-  _CardImage(this.imgUrl);
+  _CardImage(this.imgPath);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200.0,
-      height: 200.0,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: NetworkImage(imgUrl), // Your ImageProvider
-          fit: BoxFit.cover, // Ensures the image fills the container
-        ),
-      ),
+      width: 80.0,
+      height: 80.0,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+      child: imgPath == null
+          ? Center(child: Icon(Icons.photo, size: 80, color: Colors.white70))
+          : Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                image: DecorationImage(
+                  image: FileImage(File(imgPath!)),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
     );
   }
 }
