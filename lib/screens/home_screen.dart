@@ -24,63 +24,114 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String filter = "all";
+
   @override
   Widget build(BuildContext context) {
+    List<Reminder> filteredReminders = reminders;
+    if (filter == 'pending') {
+      filteredReminders = reminders
+          .where((reminder) => reminder.isComplete == false)
+          .toList();
+    } else if (filter == 'completed') {
+      filteredReminders = reminders
+          .where((reminder) => reminder.isComplete == true)
+          .toList();
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text("Recall Memory Assistant"), centerTitle: true),
       floatingActionButton: FloatingActionButton(
         onPressed: _addReminder,
         child: const Icon(Icons.add),
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.all(12),
-        itemCount: reminders.length,
-        itemBuilder: (context, index) => Dismissible(
-          key: Key(reminders[index].title),
-          direction: DismissDirection.endToStart, // right to left
-          background: Container(
-            color: Colors.red,
-            child: Icon(Icons.delete_outline),
-          ),
-          onDismissed: (direction) {
-            final removedReminder = reminders[index];
-            final removedIndex = index;
-
-            setState(() {
-              reminders.removeAt(index);
-            });
-
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: Duration(seconds: 2),
-                content: Text("Reminder deleted"),
-                action: SnackBarAction(
-                  label: 'Undo',
-                  onPressed: () {
-                    setState(() {
-                      reminders.insert(removedIndex, removedReminder);
-                    });
-                  },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              spacing: 12,
+              children: [
+                ChoiceChip(
+                  label: Text("All"),
+                  selected: filter == 'all',
+                  onSelected: (bool selected) => setState(() {
+                    filter = selected ? 'all' : 'all';
+                  }),
                 ),
-              ),
-            );
-          },
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                reminders[index].isComplete = !reminders[index].isComplete;
-              });
-            },
-            child: ReminderCard(
-              reminders[index].imagePath,
-              reminders[index].title,
-              reminders[index].time,
-              reminders[index].isComplete
+                ChoiceChip(
+                  label: Text("Pending"),
+                  selected: filter == 'pending',
+                  onSelected: (bool selected) => setState(() {
+                    filter = selected ? 'pending' : 'all';
+                  }),
+                ),
+                ChoiceChip(
+                  label: Text("Completed"),
+                  selected: filter == 'completed',
+                  onSelected: (bool selected) => setState(() {
+                    filter = selected ? 'completed' : 'all';
+                  }),
+                ),
+              ],
             ),
           ),
-        ),
+
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.all(12),
+              itemCount: filteredReminders.length,
+              itemBuilder: (context, index) => Dismissible(
+                key: Key(filteredReminders[index].title),
+                direction: DismissDirection.endToStart, // right to left
+                background: Container(
+                  color: Colors.red,
+                  child: Icon(Icons.delete_outline),
+                ),
+                onDismissed: (direction) {
+                  final removedReminder = filteredReminders[index];
+                  final removedIndex = reminders.indexOf(removedReminder);
+
+                  setState(() {
+                    reminders.removeAt(removedIndex);
+                  });
+
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: Duration(seconds: 2),
+                      content: Text("Reminder deleted"),
+                      action: SnackBarAction(
+                        label: 'Undo',
+                        onPressed: () {
+                          setState(() {
+                            reminders.insert(removedIndex, removedReminder);
+                          });
+                        },
+                      ),
+                    ),
+                  );
+                },
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      filteredReminders[index].isComplete =
+                          !filteredReminders[index].isComplete;
+                    });
+                  },
+                  child: ReminderCard(
+                    filteredReminders[index].imagePath,
+                    filteredReminders[index].title,
+                    filteredReminders[index].time,
+                    filteredReminders[index].isComplete,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
