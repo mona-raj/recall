@@ -4,37 +4,42 @@ class ReminderCard extends StatelessWidget {
   final String imgUrl;
   final String title;
   final String time;
+  final bool isComplete;
 
-  ReminderCard(this.imgUrl, this.title, this.time);
+  ReminderCard(this.imgUrl, this.title, this.time, this.isComplete);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-      child: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment(0.8, 1),
-            colors: <Color>[
-              Color.fromARGB(255, 53, 191, 237),
-              Color.fromARGB(255, 149, 184, 228),
-            ],
-            tileMode: TileMode.mirror,
-          ),
-        ),
-        child: Row(
-          spacing: 32,
-          children: [
-            _CardImage(imgUrl),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 20,
-              children: [_CardText(title), _CardText(time)],
+      child: AnimatedOpacity(
+        duration: Duration(milliseconds: 200),
+        opacity: isComplete ? 0.5 : 1,
+        child: Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment(0.8, 1),
+              colors: <Color>[
+                Color.fromARGB(255, 53, 191, 237),
+                Color.fromARGB(255, 149, 184, 228),
+              ],
+              tileMode: TileMode.mirror,
             ),
-          ],
+          ),
+          child: Row(
+            spacing: 32,
+            children: [
+              _CardImage(imgUrl),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 20,
+                children: [_CardText(title), _CardText(time)],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -69,6 +74,9 @@ class _CardText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)));
+    return Text(
+      text,
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
+    );
   }
 }

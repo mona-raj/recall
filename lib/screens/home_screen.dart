@@ -67,10 +67,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           },
-          child: ReminderCard(
-            reminders[index].imagePath,
-            reminders[index].title,
-            reminders[index].time,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                reminders[index].isComplete = !reminders[index].isComplete;
+              });
+            },
+            child: ReminderCard(
+              reminders[index].imagePath,
+              reminders[index].title,
+              reminders[index].time,
+              reminders[index].isComplete
+            ),
           ),
         ),
       ),

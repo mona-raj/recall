@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
-
 class Reminder {
-
-  Reminder(this.title, this.time, this.imagePath);
+  Reminder({
+    required this.title,
+    required this.time,
+    required this.imagePath,
+    this.isComplete = false,
+  });
 
   final String title;
   final String time;
   final String imagePath;
+  bool isComplete;
 }

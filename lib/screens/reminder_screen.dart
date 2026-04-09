@@ -47,7 +47,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
       showMessage("Please select a time");
     } else {
       String time = selectedTime!.format(context);
-      Reminder newReminder = Reminder(title, time, imagePath);
+      Reminder newReminder = Reminder(title: title, time: time, imagePath: imagePath);
       Navigator.pop(context, newReminder);
     }
   }
