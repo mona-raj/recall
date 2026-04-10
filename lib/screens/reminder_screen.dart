@@ -23,10 +23,52 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   void pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.camera);
-    setState(() {
-      selectedImage = image;
-    });
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Choose an option"),
+        content: Text(
+          "Take a photo with your camera or choose from your gallery",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final XFile? image = await picker.pickImage(
+                source: ImageSource.camera,
+              );
+              if (!mounted) return;
+              setState(() {
+                selectedImage = image;
+              });
+              Navigator.pop(context);
+            },
+            child: Text("Camera"),
+          ),
+          TextButton(
+            onPressed: () async {
+              final XFile? image = await picker.pickImage(
+                source: ImageSource.gallery,
+              );
+              if (!mounted) return;
+              setState(() {
+                selectedImage = image;
+              });
+              Navigator.pop(context);
+            },
+            child: Text("Gallery"),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                selectedImage = null;
+              });
+              Navigator.pop(context);
+            },
+            child: Text("Cancel"),
+          ),
+        ],
+      ),
+    );
   }
 
   TimeOfDay? selectedTime;
