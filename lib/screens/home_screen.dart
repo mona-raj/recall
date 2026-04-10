@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(Icons.add),
       ),
 
-      body: filteredReminders.isEmpty
+      body: reminders.isEmpty
           ? NoRemindersWidget()
           : Column(
               children: [
