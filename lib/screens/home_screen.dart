@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text("Recall Memory Assistant"), centerTitle: true),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.large(
         onPressed: _addReminder,
         child: const Icon(Icons.add),
       ),

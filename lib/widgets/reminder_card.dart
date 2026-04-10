@@ -38,7 +38,26 @@ class ReminderCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 20,
-                children: [_CardText(title), _CardText(time)],
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time),
+                      SizedBox(width: 10),
+                      Text(
+                        time,
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 48, 48, 48),
+                          fontSize: 14,
+                          fontWeight: FontWeight(400),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -70,20 +89,6 @@ class _CardImage extends StatelessWidget {
                 ),
               ),
             ),
-    );
-  }
-}
-
-class _CardText extends StatelessWidget {
-  final String text;
-
-  _CardText(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
     );
   }
 }

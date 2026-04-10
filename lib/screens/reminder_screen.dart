@@ -73,50 +73,51 @@ class _ReminderScreenState extends State<ReminderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Add Reminder"), centerTitle: true),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(hintText: 'Enter Reminder name'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => pickImage(),
-                    child: Text("Add photo"),
-                  ),
-                  if (selectedImage != null)
-                    Image.file(
-                      File(selectedImage!.path),
-                      height: 200,
-                      width: 200,
-                    ),
-                ],
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                spacing: 12,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => pickTime(context, selectedTime),
-                    child: Text("Select time"),
-                  ),
-                  if (selectedTime != null)
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        "Selected time: ${selectedTime?.format(context)}",
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
+                    children: [
+                      TextFormField(
+                        controller: titleController,
+                        decoration: InputDecoration(
+                          labelText: 'Enter Reminder name',
+                        ),
                       ),
-                    ),
-                ],
+                      SizedBox(height: 8),
+                      if (selectedImage != null)
+                        Image.file(
+                          File(selectedImage!.path),
+                          height: 200,
+                          width: 200,
+                        ),
+                      ElevatedButton(
+                        onPressed: () => pickImage(),
+                        child: Text("Add photo"),
+                      ),
+                      SizedBox(height: 8),
+                      if (selectedTime != null)
+                        Text(
+                          textAlign: TextAlign.center,
+                          "Selected time: ${selectedTime?.format(context)}",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ElevatedButton(
+                        onPressed: () => pickTime(context, selectedTime),
+                        child: Text("Select time"),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              SizedBox(height: 12),
               ElevatedButton(
                 onPressed: submitReminder,
                 child: Text("Save Reminder"),
