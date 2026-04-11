@@ -102,16 +102,19 @@ class _ReminderScreenState extends State<ReminderScreen> {
     } else if (selectedTime == null) {
       showMessage("Please select a time");
     } else {
-      String time = selectedTime!.format(context);
+      const int maxInt32 = 2147483647;
+      final int generatedId = DateTime.now().millisecondsSinceEpoch.remainder(
+        maxInt32,
+      );
       Reminder newReminder = Reminder(
+        notificationId: generatedId,
         title: title,
-        time: time,
+        time: selectedTime!,
         imagePath: imagePath,
       );
 
       NotificationService().scheduleNotification(
-        id: 0,
-        title: 'Recall Notification',
+        id: generatedId,
         body: title,
         time: selectedTime!,
         imagePath: imagePath,

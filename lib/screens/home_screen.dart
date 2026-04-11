@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recall/models/reminder.dart';
 import 'package:recall/screens/reminder_screen.dart';
+import 'package:recall/services/notification_service.dart';
 import 'package:recall/widgets/no_reminders_widget.dart';
 import 'package:recall/widgets/reminder_card.dart';
 
@@ -102,6 +103,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           reminders.removeAt(removedIndex);
                         });
 
+                        NotificationService().cancelNotification(
+                          removedReminder.notificationId,
+                        );
+
                         ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -117,6 +122,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     removedReminder,
                                   );
                                 });
+
+                                NotificationService().scheduleNotification(
+                                  id: removedReminder.notificationId,
+                                  body: removedReminder.title,
+                                  time: removedReminder.time,
+                                );
                               },
                             ),
                           ),
@@ -124,9 +135,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       child: GestureDetector(
                         onTap: () {
+                          final currentReminder = filteredReminders[index];
+
+                          if (currentReminder.isComplete) {
+                            NotificationService().scheduleNotification(
+                              id: currentReminder.notificationId,
+                              body: currentReminder.title,
+                              time: currentReminder.time,
+                            );
+                          } else {
+                            NotificationService().cancelNotification(
+                              currentReminder.notificationId,
+                            );
+                          }
+
                           setState(() {
-                            filteredReminders[index].isComplete =
-                                !filteredReminders[index].isComplete;
+                            currentReminder.isComplete =
+                                !currentReminder.isComplete;
                           });
                         },
                         child: ReminderCard(

@@ -4,7 +4,7 @@ import 'dart:io';
 class ReminderCard extends StatelessWidget {
   final String? imgPath;
   final String title;
-  final String time;
+  final TimeOfDay time;
   final bool isComplete;
 
   ReminderCard(this.imgPath, this.title, this.time, this.isComplete);
@@ -48,7 +48,7 @@ class ReminderCard extends StatelessWidget {
                       Icon(Icons.access_time),
                       SizedBox(width: 10),
                       Text(
-                        time,
+                        time.format(context),
                         style: TextStyle(
                           color: const Color.fromARGB(255, 48, 48, 48),
                           fontSize: 14,

@@ -64,7 +64,7 @@ class NotificationService {
 
   Future<void> scheduleNotification({
     required int id,
-    required String title,
+    String title = 'Recall Notification',
     required String body,
     required TimeOfDay time,
     String? imagePath,
@@ -81,7 +81,7 @@ class NotificationService {
     );
 
     if (scheduledTime.isBefore(now)) {
-      scheduledTime.add(Duration(days: 1));
+      scheduledTime = scheduledTime.add(Duration(days: 1));
     }
 
     BigPictureStyleInformation? bigPictureStyleInformation;
@@ -120,7 +120,7 @@ class NotificationService {
     );
   }
 
-  // Future<void> cancelNotification(...) async {
-  //    ...
-  // }
+  Future<void> cancelNotification(int id) async {
+    notificationsPlugin.cancel(id: id);
+  }
 }
