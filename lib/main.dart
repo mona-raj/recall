@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recall/screens/home_screen.dart';
+import 'package:recall/screens/main_screen.dart';
 import 'package:recall/services/notification_service.dart';
 
 void main() async {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: MainScreen(),
     );
   }
 } 
