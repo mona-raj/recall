@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:recall/models/reminder.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:recall/models/reminder.dart';
 import 'package:recall/services/notification_service.dart';
 
 class ReminderScreen extends StatefulWidget {
+  const ReminderScreen({super.key});
+
   @override
   State<ReminderScreen> createState() => _ReminderScreenState();
 }
@@ -126,58 +128,151 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text("Add Reminder"), centerTitle: true),
+      appBar: AppBar(title: const Text("Add Reminder"), centerTitle: true),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 12,
-                    children: [
-                      TextFormField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          labelText: 'Enter Reminder name',
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      if (selectedImage != null)
-                        Image.file(
-                          File(selectedImage!.path),
-                          height: 200,
-                          width: 200,
-                        ),
-                      ElevatedButton(
-                        onPressed: () => pickImage(),
-                        child: Text("Add photo"),
-                      ),
-                      SizedBox(height: 8),
-                      if (selectedTime != null)
+        child: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowIndicator();
+            return true;
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: theme.dividerColor.withValues(alpha: 0.15),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          textAlign: TextAlign.center,
-                          "Selected time: ${selectedTime?.format(context)}",
-                          style: TextStyle(fontSize: 16),
+                          'New Reminder',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ElevatedButton(
-                        onPressed: () => pickTime(context, selectedTime),
-                        child: Text("Select time"),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          'Add title, photo, and time',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: titleController,
+                          decoration: InputDecoration(
+                            labelText: 'Reminder title',
+                            prefixIcon: const Icon(Icons.edit_note_rounded),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.6),
+                          ),
+                          child: selectedImage == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_outlined,
+                                      size: 40,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'No image selected',
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Image.file(
+                                    File(selectedImage!.path),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: pickImage,
+                            icon: const Icon(Icons.add_a_photo_outlined),
+                            label: const Text('Add Photo'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.45),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.access_time_rounded),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  selectedTime == null
+                                      ? 'No time selected'
+                                      : 'Selected time: ${selectedTime!.format(context)}',
+                                  style: theme.textTheme.bodyLarge,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.tonalIcon(
+                            onPressed: () => pickTime(context, selectedTime),
+                            icon: const Icon(Icons.schedule_rounded),
+                            label: const Text('Select Time'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: submitReminder,
-                child: Text("Save Reminder"),
-              ),
-            ],
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: submitReminder,
+                    icon: const Icon(Icons.save_rounded),
+                    label: const Text('Save Reminder'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

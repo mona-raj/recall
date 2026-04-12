@@ -3,13 +3,17 @@ import 'package:recall/screens/home_screen.dart';
 import 'package:recall/screens/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
+  MainScreen({required this.toggleTheme, required this.isDark});
+
+  final Function(bool) toggleTheme;
+  final bool isDark;
+
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  final List<Widget> _tabScreens = [HomeScreen(), ProfileScreen()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -20,11 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Recall Memory Assistant"),
-        centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 149, 184, 228),
-      ),
+      appBar: AppBar(title: const Text("Recall Memory Assistant")),
 
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 30,
@@ -46,7 +46,13 @@ class _MainScreenState extends State<MainScreen> {
         onTap: _onItemTapped,
       ),
 
-      body: IndexedStack(index: _selectedIndex, children: _tabScreens),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          HomeScreen(),
+          ProfileScreen(toggleTheme: widget.toggleTheme, isDark: widget.isDark),
+        ],
+      ),
     );
   }
 }

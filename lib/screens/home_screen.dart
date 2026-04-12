@@ -83,80 +83,89 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(12),
-                    itemCount: filteredReminders.length,
-                    itemBuilder: (context, index) => Dismissible(
-                      key: Key(filteredReminders[index].title),
-                      direction: DismissDirection.endToStart, // right to left
-                      background: Container(
-                        color: Colors.red,
-                        child: Icon(Icons.delete_outline),
-                      ),
-                      onDismissed: (direction) {
-                        final removedReminder = filteredReminders[index];
-                        final removedIndex = reminders.indexOf(removedReminder);
-
-                        setState(() {
-                          reminders.removeAt(removedIndex);
-                        });
-
-                        NotificationService().cancelNotification(
-                          removedReminder.notificationId,
-                        );
-
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: Duration(seconds: 2),
-                            content: Text("Reminder deleted"),
-                            action: SnackBarAction(
-                              label: 'Undo',
-                              onPressed: () {
-                                setState(() {
-                                  reminders.insert(
-                                    removedIndex,
-                                    removedReminder,
-                                  );
-                                });
-
-                                NotificationService().scheduleNotification(
-                                  id: removedReminder.notificationId,
-                                  body: removedReminder.title,
-                                  time: removedReminder.time,
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: GestureDetector(
-                        onTap: () {
-                          final currentReminder = filteredReminders[index];
-
-                          if (currentReminder.isComplete) {
-                            NotificationService().scheduleNotification(
-                              id: currentReminder.notificationId,
-                              body: currentReminder.title,
-                              time: currentReminder.time,
-                            );
-                          } else {
-                            NotificationService().cancelNotification(
-                              currentReminder.notificationId,
-                            );
-                          }
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification: (overscroll) {
+                      overscroll.disallowIndicator();
+                      return true;
+                    },
+                    child: ListView.builder(
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsets.all(12),
+                      itemCount: filteredReminders.length,
+                      itemBuilder: (context, index) => Dismissible(
+                        key: Key(filteredReminders[index].title),
+                        direction: DismissDirection.endToStart, // right to left
+                        background: Container(
+                          color: Colors.red,
+                          child: Icon(Icons.delete_outline),
+                        ),
+                        onDismissed: (direction) {
+                          final removedReminder = filteredReminders[index];
+                          final removedIndex = reminders.indexOf(
+                            removedReminder,
+                          );
 
                           setState(() {
-                            currentReminder.isComplete =
-                                !currentReminder.isComplete;
+                            reminders.removeAt(removedIndex);
                           });
+
+                          NotificationService().cancelNotification(
+                            removedReminder.notificationId,
+                          );
+
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: Duration(seconds: 2),
+                              content: Text("Reminder deleted"),
+                              action: SnackBarAction(
+                                label: 'Undo',
+                                onPressed: () {
+                                  setState(() {
+                                    reminders.insert(
+                                      removedIndex,
+                                      removedReminder,
+                                    );
+                                  });
+
+                                  NotificationService().scheduleNotification(
+                                    id: removedReminder.notificationId,
+                                    body: removedReminder.title,
+                                    time: removedReminder.time,
+                                  );
+                                },
+                              ),
+                            ),
+                          );
                         },
-                        child: ReminderCard(
-                          filteredReminders[index].imagePath,
-                          filteredReminders[index].title,
-                          filteredReminders[index].time,
-                          filteredReminders[index].isComplete,
+                        child: GestureDetector(
+                          onTap: () {
+                            final currentReminder = filteredReminders[index];
+
+                            if (currentReminder.isComplete) {
+                              NotificationService().scheduleNotification(
+                                id: currentReminder.notificationId,
+                                body: currentReminder.title,
+                                time: currentReminder.time,
+                              );
+                            } else {
+                              NotificationService().cancelNotification(
+                                currentReminder.notificationId,
+                              );
+                            }
+
+                            setState(() {
+                              currentReminder.isComplete =
+                                  !currentReminder.isComplete;
+                            });
+                          },
+                          child: ReminderCard(
+                            filteredReminders[index].imagePath,
+                            filteredReminders[index].title,
+                            filteredReminders[index].time,
+                            filteredReminders[index].isComplete,
+                          ),
                         ),
                       ),
                     ),
