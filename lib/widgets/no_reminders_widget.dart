@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NoRemindersWidget extends StatelessWidget {
+  const NoRemindersWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(

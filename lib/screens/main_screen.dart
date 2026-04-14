@@ -3,7 +3,7 @@ import 'package:recall/screens/home_screen.dart';
 import 'package:recall/screens/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({required this.toggleTheme, required this.isDark});
+  const MainScreen({super.key, required this.toggleTheme, required this.isDark});
 
   final Function(bool) toggleTheme;
   final bool isDark;
