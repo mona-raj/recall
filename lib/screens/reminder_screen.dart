@@ -6,7 +6,8 @@ import 'package:recall/models/reminder.dart';
 import 'package:recall/services/notification_service.dart';
 
 class ReminderScreen extends StatefulWidget {
-  const ReminderScreen({super.key});
+  final Reminder? currentReminder;
+  const ReminderScreen(this.currentReminder, {super.key});
 
   @override
   State<ReminderScreen> createState() => _ReminderScreenState();
@@ -42,6 +43,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
               setState(() {
                 selectedImage = image;
               });
+              if (!context.mounted) return;
               Navigator.pop(context);
             },
             child: Text("Camera"),
@@ -55,6 +57,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
               setState(() {
                 selectedImage = image;
               });
+              if (!context.mounted) return;
               Navigator.pop(context);
             },
             child: Text("Gallery"),
