@@ -14,15 +14,28 @@ class ReminderScreen extends StatefulWidget {
 }
 
 class _ReminderScreenState extends State<ReminderScreen> {
-  TextEditingController titleController = TextEditingController();
+  late TextEditingController titleController;
+
+  late XFile? selectedImage;
+  late TimeOfDay? selectedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = widget.currentReminder != null
+        ? TextEditingController(text: widget.currentReminder!.title)
+        : TextEditingController();
+    selectedImage = widget.currentReminder?.imagePath != null
+        ? XFile(widget.currentReminder!.imagePath!)
+        : null;
+    selectedTime = widget.currentReminder?.time;
+  }
 
   @override
   void dispose() {
     titleController.dispose();
     super.dispose();
   }
-
-  XFile? selectedImage;
 
   void pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -75,8 +88,6 @@ class _ReminderScreenState extends State<ReminderScreen> {
       ),
     );
   }
-
-  TimeOfDay? selectedTime;
 
   Future<void> pickTime(BuildContext context, TimeOfDay? initialTime) async {
     TimeOfDay? pickedTime = await showTimePicker(
@@ -133,7 +144,12 @@ class _ReminderScreenState extends State<ReminderScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Reminder"), centerTitle: true),
+      appBar: AppBar(
+        title: widget.currentReminder != null
+            ? Text("Edit Reminder")
+            : Text("Add Reminder"),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: NotificationListener<OverscrollIndicatorNotification>(
           onNotification: (overscroll) {

@@ -67,8 +67,23 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _editReminder(Reminder currentReminder) {
-    
+  void _editReminder(Reminder currentReminder) async {
+    final newReminder = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReminderScreen(currentReminder)),
+    );
+
+    if (newReminder != null) {
+      final removedIndex = reminders.indexOf(currentReminder);
+      if (removedIndex == -1) {
+        return;
+      }
+      setState(() {
+        reminders.removeAt(removedIndex);
+        reminders.add(newReminder);
+      });
+      NotificationService().cancelNotification(currentReminder.notificationId);
+    }
   }
 
   Future<void> _addReminder() async {
@@ -162,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
 
                         onLongPress: () {
+                          final currentReminder = filteredReminders[index];
                           showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
@@ -176,40 +192,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                       SizedBox(
                                         width: 300,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
                                           children: [
                                             TextButton(
                                               onPressed: () {
-                                                final removedReminder =
-                                                    filteredReminders[index];
                                                 _handleReminderDismiss(
-                                                  removedReminder,
+                                                  currentReminder,
                                                 );
                                                 Navigator.pop(context);
                                               },
                                               child: Text("Delete"),
                                             ),
+                                            if (!currentReminder.isComplete)
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  _editReminder(
+                                                    currentReminder,
+                                                  );
+                                                },
+                                                child: Text("Edit"),
+                                              ),
                                             TextButton(
                                               onPressed: () {
-                                                final currentReminder =
-                                                    filteredReminders[index];
-                                                _editReminder(
-                                                  currentReminder,
-                                                );
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Edit"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                final currentReminder =
-                                                    filteredReminders[index];
                                                 _toggleReminderCompletion(
                                                   currentReminder,
                                                 );
                                                 Navigator.pop(context);
                                               },
-                                              child: Text("Mark Complete"),
+                                              child: currentReminder.isComplete
+                                                  ? Text("Mark Uncomplete")
+                                                  : Text("Mark Complete"),
                                             ),
                                           ],
                                         ),
